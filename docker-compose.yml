@@ -138,7 +138,7 @@ services:
       - 8811:80
       - 8443:443
     volumes:
-      - /mnt/nfs01:/media/organizr/config:/config
+      - ''/mnt/nfs01/docker:/media/organizr/config:/config'
     environment:
       PUID: ${userid}
       PGID: ${groupid}
