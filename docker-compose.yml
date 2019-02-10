@@ -31,7 +31,7 @@ services:
       - TZ=America/Los_Angeles
 #      - PLEX_CLAIM=${plexclaim}
 #      - ADVERTISE_IP=http://192.168.42.99:32400/
-    hostname: plextest
+    hostname: plex
     volumes:
       - /var/nfs01/media/plex/config:/config
       - /var/nfs01/media/plex/transcode:/transcode
@@ -130,7 +130,7 @@ services:
 
   organizr:
     image: lsiocommunity/organizr
-    container_name: organizr-test
+    container_name: organizr
     restart: always
 #    networks:
 #      - media
