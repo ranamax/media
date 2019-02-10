@@ -1,0 +1,146 @@
+# Before using this, export the following:
+# export userid=$(id -u)
+# export groupid=$(id -g)
+# export time=$(cat /etc/timezone)
+# export plexclaim=
+
+version: '2'
+volumes:
+  nfs:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=10.0.0.51,rw
+      device: ":/volume1/nfs01/docker"
+services:
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker:plexpass
+    restart: always
+    ports:
+      - 32400:32400/tcp
+      - 3005:3005/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    environment:
+      - TZ=America/Los_Angeles
+#      - PLEX_CLAIM=${plexclaim}
+#      - ADVERTISE_IP=http://192.168.42.99:32400/
+    hostname: plextest
+    volumes:
+      - nfs/media/plex/config:/config
+      - nfs/media/plex/transcode:/transcode
+      - nfs/media/tv:/tv
+      - nfs/media/movies:/movies
+
+  sabnzbd:
+    image: sabnzbd/sabnzbd
+    container_name: sabnzbd
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+      - nfs/media/sabnzbd/config:/config
+      - nfs/media/sabnzbd/downloads/complete:/downloads
+      - nfs/media/sabnzbd/downloads/incomplete:/incomplete-downloads
+
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    restart: always
+    ports:
+      - 7878:7878
+    volumes:
+      - nfs/media/radarr:/config
+      - nfs/media/movies:/movies
+      - nfs/media/downloads:/downloads
+#      - /etc/localtime:/etc/localtime:ro
+    environment:
+      PUID: 503
+      PGID: 20
+#      TZ: ${time}
+      TZ: America/Los_Angeles
+
+    # ----------------------------------------
+    # plexpy
+    # ----------------------------------------
+#  plexpy:
+#    image: linuxserver/plexpy
+#    container_name: plexpy
+#    restart: always
+#    network_mode: "bridge"
+#    ports:
+#      - '8181:8181'
+#    environment:
+#      - PUID=503
+#      - PGID=20
+#    volumes:
+#      - 'nfs:/media/plexpy/config:/config'
+#      - 'nfs:/media/plex/config/Library/Application Support/Plex Media Server/Logs:/logs:ro'
+##      - '/etc/localtime:/etc/localtime:ro'
+#    depends_on:
+#      - plex
+
+    # ----------------------------------------
+    # SICKRAGE
+    # ----------------------------------------
+  sickrage:
+#   image: sickrage/sickrage
+    image: linuxserver/sickrage
+    container_name: sickrage
+    restart: always
+    network_mode: "bridge"
+    ports:
+      - '8081:8081'
+    environment:
+      - PUID=503
+      - PGID=20
+    volumes:
+      - 'nfs/media/sickrage/config:/config'
+      - 'nfs/media/downloads:/downloads'
+      - 'nfs/media/tv:/tv'
+      - 'nfs/media/movies:/movies'
+#      - '/etc/localtime:/etc/localtime:ro'
+
+    # ----------------------------------------
+    # Couchpotato
+    # ----------------------------------------
+  couchpotato:
+    image: linuxserver/couchpotato
+    container_name: couchpotato
+    restart: always
+    network_mode: "bridge"
+    ports:
+      - '5050:5050'
+    environment:
+      - PUID=503
+      - PGID=20
+    volumes:
+      - 'nfs/media/couchpotato/config:/config'
+      - 'nfs/media/downloads:/downloads'
+      - 'nfs/media/tv:/tv'
+      - 'nfs/media/movies:/movies'
+#      - '/etc/localtime:/etc/localtime:ro'
+
+
+  organizr:
+    image: lsiocommunity/organizr
+    container_name: organizr-test
+    restart: always
+#    networks:
+#      - media
+    ports:
+      - 8811:80
+      - 8443:443
+    volumes:
+      - nfs:/media/organizr/config:/config
+    environment:
+      PUID: ${userid}
+      PGID: ${groupid}
+#      TZ: ${time}
+      TZ: America/Los_Angeles
