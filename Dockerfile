@@ -6,7 +6,7 @@ RUN mkdir -p /run/lock/subsys
 # Update RPM Packages
 RUN yum -y update; yum clean all
 RUN yum -y install initscripts; yum clean all
-RUN rpm -Uvh https://downloads.plex.tv/plex-media-server/0.9.12.18.1520-6833552/plexmediaserver-0.9.12.18.1520-6833552.x86_64.rpm; echo 'avoiding error'
+RUN rpm -Uvh https://downloads.plex.tv/plex-media-server/1.14.1.5488-cc260c476/plexmediaserver-1.14.1.5488-cc260c476.x86_64.rpm; echo 'avoiding error'
 RUN mkdir /config && \
     mkdir /data && \
     chown plex:plex /config && \
