@@ -33,10 +33,10 @@ services:
 #      - ADVERTISE_IP=http://192.168.42.99:32400/
     hostname: plex
     volumes:
-      - /var/nfs01/media/plex/config:/config
-      - /var/nfs01/media/plex/transcode:/transcode
-      - /var/nfs01/media/tv:/tv
-      - /var/nfs01/media/movies:/movies
+      - /mnt/nfs01/media/plex/config:/config
+      - /mnt/nfs01/media/plex/transcode:/transcode
+      - /mnt/nfs01/media/tv:/tv
+      - /mnt/nfs01/media/movies:/movies
 
   sabnzbd:
     image: sabnzbd/sabnzbd
@@ -45,9 +45,9 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - /var/nfs01/media/sabnzbd/config:/config
-      - /var/nfs01/media/sabnzbd/downloads/complete:/downloads
-      - /var/nfs01/media/sabnzbd/downloads/incomplete:/incomplete-downloads
+      - /mnt/nfs01/media/sabnzbd/config:/config
+      - /mnt/nfs01/media/sabnzbd/downloads/complete:/downloads
+      - /mnt/nfs01/media/sabnzbd/downloads/incomplete:/incomplete-downloads
 
   radarr:
     image: linuxserver/radarr
@@ -56,9 +56,9 @@ services:
     ports:
       - 7878:7878
     volumes:
-      - /var/nfs01/media/radarr:/config
-      - /var/nfs01/media/movies:/movies
-      - /var/nfs01/media/downloads:/downloads
+      - /mnt/nfs01/media/radarr:/config
+      - /mnt/nfs01/media/movies:/movies
+      - /mnt/nfs01/media/downloads:/downloads
 #      - /etc/localtime:/etc/localtime:ro
     environment:
       PUID: 503
@@ -80,8 +80,8 @@ services:
 #      - PUID=503
 #      - PGID=20
 #    volumes:
-#      - '/var/nfs01:/media/plexpy/config:/config'
-#      - '/var/nfs01:/media/plex/config/Library/Application Support/Plex Media Server/Logs:/logs:ro'
+#      - '/mnt/nfs01:/media/plexpy/config:/config'
+#      - '/mnt/nfs01:/media/plex/config/Library/Application Support/Plex Media Server/Logs:/logs:ro'
 ##      - '/etc/localtime:/etc/localtime:ro'
 #    depends_on:
 #      - plex
@@ -101,10 +101,10 @@ services:
       - PUID=503
       - PGID=20
     volumes:
-      - '/var/nfs01/media/sickrage/config:/config'
-      - '/var/nfs01/media/downloads:/downloads'
-      - '/var/nfs01/media/tv:/tv'
-      - '/var/nfs01/media/movies:/movies'
+      - '/mnt/nfs01/media/sickrage/config:/config'
+      - '/mnt/nfs01/media/downloads:/downloads'
+      - '/mnt/nfs01/media/tv:/tv'
+      - '/mnt/nfs01/media/movies:/movies'
 #      - '/etc/localtime:/etc/localtime:ro'
 
     # ----------------------------------------
@@ -121,10 +121,10 @@ services:
       - PUID=503
       - PGID=20
     volumes:
-      - '/var/nfs01/media/couchpotato/config:/config'
-      - '/var/nfs01/media/downloads:/downloads'
-      - '/var/nfs01/media/tv:/tv'
-      - '/var/nfs01/media/movies:/movies'
+      - '/mnt/nfs01/media/couchpotato/config:/config'
+      - '/mnt/nfs01/media/downloads:/downloads'
+      - '/mnt/nfs01/media/tv:/tv'
+      - '/mnt/nfs01/media/movies:/movies'
 #      - '/etc/localtime:/etc/localtime:ro'
 
 
@@ -138,7 +138,7 @@ services:
       - 8811:80
       - 8443:443
     volumes:
-      - '/var/nfs01/media/organizr/config:/config'
+      - '/mnt/nfs01/media/organizr/config:/config'
     environment:
       PUID: ${userid}
       PGID: ${groupid}
