@@ -8,10 +8,10 @@ version: '2'
 volumes:
   plex:
     driver: local
-    driver_opts:
-      type: nfs
-      o: addr=10.0.0.51,rw
-      device: ":/volume1/nfs01/docker/"
+#    driver_opts:
+#      type: nfs
+#      o: addr=10.0.0.51,rw
+#      device: ":/volume1/nfs01/docker/"
 services:
   plex:
     container_name: plex
@@ -28,26 +28,32 @@ services:
       - 32413:32413/udp
       - 32414:32414/udp
     environment:
-      - TZ=America/Los_Angeles
+      - TZ=America/New_York
 #      - PLEX_CLAIM=${plexclaim}
 #      - ADVERTISE_IP=http://192.168.42.99:32400/
     hostname: plex
     volumes:
-      - /mnt/nfs01/media/plex/config:/config
-      - /mnt/nfs01/media/plex/transcode:/transcode
-      - /mnt/nfs01/media/tv:/tv
-      - /mnt/nfs01/media/movies:/movies
+      - "/Users/zain/media/plex/config:/config"
+      - "/Users/zain/media/plex/transcode:/transcode"
+      - "/Users/zain/media/tv:/tv"
+      - "/Users/zain/media/movies:/movies"
+#      - /mnt/nfs01/media/plex/config:/config
+#      - /mnt/nfs01/media/plex/transcode:/transcode
+#      - /mnt/nfs01/media/tv:/tv
+#      - /mnt/nfs01/media/movies:/movies
 
   sabnzbd:
-    image: sabnzbd/sabnzbd
+    image: linuxserver/sabnzbd
     container_name: sabnzbd
     restart: always
     ports:
       - 8080:8080
     volumes:
-      - /mnt/nfs01/media/sabnzbd/config:/config
-      - /mnt/nfs01/media/sabnzbd/downloads/complete:/downloads
-      - /mnt/nfs01/media/sabnzbd/downloads/incomplete:/incomplete-downloads
+      - "/Users/zain/media/sabnzbd/datadir:/datadir"
+      - "/Users/zain/media/movies:/datadir/movies"
+      - "/Users/zain/media/tv:/datadir/tv"
+      - "/Users/zain/media/music:/datadir/music"
+      - "/Users/zain/media/software:/datadir/software"
 
   radarr:
     image: linuxserver/radarr
@@ -56,9 +62,9 @@ services:
     ports:
       - 7878:7878
     volumes:
-      - /mnt/nfs01/media/radarr:/config
-      - /mnt/nfs01/media/movies:/movies
-      - /mnt/nfs01/media/downloads:/downloads
+      - "/Users/zain/media/radarr:/config"
+      - "/Users/zain/media/movies:/movies"
+      - "/Users/zain/media/downloads:/downloads"
 #      - /etc/localtime:/etc/localtime:ro
     environment:
       PUID: 503
@@ -101,10 +107,10 @@ services:
       - PUID=503
       - PGID=20
     volumes:
-      - '/mnt/nfs01/media/sickrage/config:/config'
-      - '/mnt/nfs01/media/downloads:/downloads'
-      - '/mnt/nfs01/media/tv:/tv'
-      - '/mnt/nfs01/media/movies:/movies'
+      - '/Users/zain/media/sickrage/config:/config'
+      - '/Users/zain/media/downloads:/downloads'
+      - '/Users/zain/media/tv:/tv'
+      - '/Users/zain/media/movies:/movies'
 #      - '/etc/localtime:/etc/localtime:ro'
 
     # ----------------------------------------
@@ -121,10 +127,10 @@ services:
       - PUID=503
       - PGID=20
     volumes:
-      - '/mnt/nfs01/media/couchpotato/config:/config'
-      - '/mnt/nfs01/media/downloads:/downloads'
-      - '/mnt/nfs01/media/tv:/tv'
-      - '/mnt/nfs01/media/movies:/movies'
+      - '/Users/zain/media/couchpotato/config:/config'
+      - '/Users/zain/media/downloads:/downloads'
+      - '/Users/zain/media/tv:/tv'
+      - '/Users/zain/media/movies:/movies'
 #      - '/etc/localtime:/etc/localtime:ro'
 
 
@@ -138,7 +144,7 @@ services:
       - 8811:80
       - 8443:443
     volumes:
-      - '/mnt/nfs01/media/organizr/config:/config'
+      - '/Users/zain/media/organizr/config:/config'
     environment:
       PUID: ${userid}
       PGID: ${groupid}
