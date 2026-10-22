@@ -1,152 +1,136 @@
 # Before using this, export the following:
-# export userid=$(id -u)
-# export groupid=$(id -g)
+# export PUID=$(id -u)
+# export GUIDD=$(id -g)
+# export TZ=America/New_York
 # export time=$(cat /etc/timezone)
 # export plexclaim=
+# Environment Variable Examples:
+# PUID = 99
+# GUID = 101
+# TZ = America/New_York
+# BASE_PATH = /Users/thor/media # This is where you docker containers will store their data for each application
+# MEDIA_SHARE = /Users/thor/media  # This is where your media files will live
+#
+# https://trash-guides.info/Hardlinks/Hardlinks-and-Instant-Moves/ # This can be useful for establishing how the media will be presented below
 
-version: '2'
-volumes:
-  plex:
-    driver: local
-#    driver_opts:
-#      type: nfs
-#      o: addr=10.0.0.51,rw
-#      device: ":/volume1/nfs01/docker/"
+---      
 services:
+  #Plex - used to display the media
   plex:
+    image: lscr.io/linuxserver/plex:latest
     container_name: plex
-    image: plexinc/pms-docker:plexpass
-    restart: always
-    ports:
-      - 32400:32400/tcp
-      - 3005:3005/tcp
-      - 8324:8324/tcp
-      - 32469:32469/tcp
-      - 1900:1900/udp
-      - 32410:32410/udp
-      - 32412:32412/udp
-      - 32413:32413/udp
-      - 32414:32414/udp
     environment:
-      - TZ=America/New_York
-#      - PLEX_CLAIM=${plexclaim}
-#      - ADVERTISE_IP=http://192.168.42.99:32400/
-    hostname: plex
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+      - VERSION=docker
+      - PLEX_CLAIM=${PLEX_CLAIM}
     volumes:
-      - "/Users/zain/media/plex/config:/config"
-      - "/Users/zain/media/plex/transcode:/transcode"
-      - "/Users/zain/media/tv:/tv"
-      - "/Users/zain/media/movies:/movies"
+      - "${BASE_PATH}/plex/config:/config"
+      - "${MEDIA_SHARE}/tv:/tv"
+      - "${MEDIA_SHARE}/movies:/movies"
 #      - /mnt/nfs01/media/plex/config:/config
-#      - /mnt/nfs01/media/plex/transcode:/transcode
 #      - /mnt/nfs01/media/tv:/tv
 #      - /mnt/nfs01/media/movies:/movies
+    ports:
+      - 32400:32400
+    restart: unless-stopped
 
   sabnzbd:
     image: linuxserver/sabnzbd
     container_name: sabnzbd
-    restart: always
+    volumes:
+      - "${BASE_PATH}/sabnzbd/datadir:/datadir"
+      - "${MEDIA_SHARE}/movies:/datadir/movies"
+      - "${MEDIA_SHARE}/tv:/datadir/tv"
+      - "${MEDIA_SHARE}/music:/datadir/music"
+      - "${MEDIA_SHARE}/software:/datadir/software"
     ports:
       - 8080:8080
-    volumes:
-      - "/Users/zain/media/sabnzbd/datadir:/datadir"
-      - "/Users/zain/media/movies:/datadir/movies"
-      - "/Users/zain/media/tv:/datadir/tv"
-      - "/Users/zain/media/music:/datadir/music"
-      - "/Users/zain/media/software:/datadir/software"
+    restart: unless-stopped
 
+  #Radarr - used to find movies automatically
   radarr:
-    image: linuxserver/radarr
+    image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
-    restart: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+    volumes:
+      - ${BASE_PATH}/radarr/config:/config
+      - ${MEDIA_SHARE}:/data #Access to the entire share
     ports:
       - 7878:7878
-    volumes:
-      - "/Users/zain/media/radarr:/config"
-      - "/Users/zain/media/movies:/movies"
-      - "/Users/zain/media/downloads:/downloads"
-#      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+
+  #Sonarr - used to find tv shows automatically
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
     environment:
-      PUID: 503
-      PGID: 20
-#      TZ: ${time}
-      TZ: America/Los_Angeles
-
-    # ----------------------------------------
-    # plexpy
-    # ----------------------------------------
-#  plexpy:
-#    image: linuxserver/plexpy
-#    container_name: plexpy
-#    restart: always
-#    network_mode: "bridge"
-#    ports:
-#      - '8181:8181'
-#    environment:
-#      - PUID=503
-#      - PGID=20
-#    volumes:
-#      - '/mnt/nfs01:/media/plexpy/config:/config'
-#      - '/mnt/nfs01:/media/plex/config/Library/Application Support/Plex Media Server/Logs:/logs:ro'
-##      - '/etc/localtime:/etc/localtime:ro'
-#    depends_on:
-#      - plex
-
-    # ----------------------------------------
-    # SICKRAGE
-    # ----------------------------------------
-  sickrage:
-#   image: sickrage/sickrage
-    image: linuxserver/sickrage
-    container_name: sickrage
-    restart: always
-    network_mode: "bridge"
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+    volumes:
+      - ${BASE_PATH}/sonarr/config:/config
+      - ${MEDIA_SHARE}:/data #Access to the entire share
     ports:
-      - '8081:8081'
+      - 8989:8989
+    restart: unless-stopped
+    
+  #Prowlarr - manages your Sonarr, Radarr and download client
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
     environment:
-      - PUID=503
-      - PGID=20
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
     volumes:
-      - '/Users/zain/media/sickrage/config:/config'
-      - '/Users/zain/media/downloads:/downloads'
-      - '/Users/zain/media/tv:/tv'
-      - '/Users/zain/media/movies:/movies'
-#      - '/etc/localtime:/etc/localtime:ro'
-
-    # ----------------------------------------
-    # Couchpotato
-    # ----------------------------------------
-  couchpotato:
-    image: linuxserver/couchpotato
-    container_name: couchpotato
-    restart: always
-    network_mode: "bridge"
+      - ${BASE_PATH}/prowlarr/config:/config
     ports:
-      - '5050:5050'
+      - 9696:9696
+    restart: unless-stopped
+
+  #Seerr - allows users to request media on their own
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    container_name: seerr
+    init: true
     environment:
-      - PUID=503
-      - PGID=20
+      - LOG_LEVEL=debug
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+      - PORT=5055 #optional
     volumes:
-      - '/Users/zain/media/couchpotato/config:/config'
-      - '/Users/zain/media/downloads:/downloads'
-      - '/Users/zain/media/tv:/tv'
-      - '/Users/zain/media/movies:/movies'
-#      - '/etc/localtime:/etc/localtime:ro'
-
-
-  organizr:
-    image: lsiocommunity/organizr
-    container_name: organizr
-    restart: always
-#    networks:
-#      - media
+      - ${BASE_PATH}/seer/config:/app/config
+      - ${MEDIA_SHARE}:/data #Access to the entire share
     ports:
-      - 8811:80
-      - 8443:443
-    volumes:
-      - '/Users/zain/media/organizr/config:/config'
+      - 5055:5055
+    restart: unless-stopped
+
+  #Tautulli - for plex statistics. Very useful when troubleshooting performance issues
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
     environment:
-      PUID: ${userid}
-      PGID: ${groupid}
-#      TZ: ${time}
-      TZ: America/Los_Angeles
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+    volumes:
+      - ${BASE_PATH}/tautulli/config:/config
+    ports:
+      - 8181:8181
+    restart: unless-stopped
+
+  #Wizarr - Allows you to create a share link that you can send to users to invite them to your media server
+  wizarr:
+    image: ghcr.io/wizarrrr/wizarr:latest
+    container_name: wizarr
+    volumes:
+      - ${BASE_PATH}/wizarr/data/database:/data/database
+    ports:
+      - 5690:5690
+    restart: unless-stopped

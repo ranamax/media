@@ -1,0 +1,127 @@
+# Environment Variable Examples:
+# PUID = 99
+# GUID = 101
+# TZ = America/New_York
+# BASE_PATH = /Users/thor/media # This is where you docker containers will store their data for each application
+# MEDIA_SHARE = /Users/thor/media  # This is where your media files will live
+#
+# https://trash-guides.info/Hardlinks/Hardlinks-and-Instant-Moves/ # This can be useful for establishing how the media will be presented below
+
+---      
+services:
+  #Plex - used to display the media
+  #
+  #This can also be replaced by Emby/Jellyfin
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+      - VERSION=docker
+      - PLEX_CLAIM=${PLEX_CLAIM}
+    ports:
+      - 32400:32400
+#    devices:
+#     - /dev/dri:/dev/dri #Required for plex HW transcoding / QuickSync
+    volumes:
+      - ${BASE_PATH}/plex/config:/config
+      - ${MEDIA_SHARE}/media/tv:/tv
+      - ${MEDIA_SHARE}/media/movies:/movies
+    restart: unless-stopped
+    
+  #Radarr - used to find movies automatically
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+    volumes:
+      - ${BASE_PATH}/radarr/config:/config
+      - ${MEDIA_SHARE}:/data #Access to the entire share
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+    
+  #Sonarr - used to find tv shows automatically
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+    volumes:
+      - ${BASE_PATH}/sonarr/config:/config
+      - ${MEDIA_SHARE}:/data #Access to the entire share
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+    
+  #Prowlarr - manages your Sonarr, Radarr and download client
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+    volumes:
+      - ${BASE_PATH}/prowlarr/config:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  #Seerr - allows users to request media on their own
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
+    environment:
+      - LOG_LEVEL=debug
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+      - PORT=5055 #optional
+    volumes:
+      - ${BASE_PATH}/seer/config:/app/config
+      - ${MEDIA_SHARE}:/data #Access to the entire share
+    ports:
+      - 5055:5055
+    restart: unless-stopped
+    
+
+  #Tautulli - for plex statistics. Very useful when troubleshooting performance issues
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    environment:
+      - PUID=${PUID}
+      - PGID=${GUID}
+      - TZ=${TZ}
+    volumes:
+      - ${BASE_PATH}/tautulli/config:/config
+    ports:
+      - 8181:8181
+    restart: unless-stopped
+    
+  #Wizarr - Allows you to create a share link that you can send to users to invite them to your media server
+  wizarr:
+    container_name: wizarr
+    image: ghcr.io/wizarrrr/wizarr:latest
+    ports:
+      - 5690:5690
+    volumes:
+      - ${BASE_PATH}/wizarr/data/database:/data/database
+    restart: unless-stopped
+
+  prefetcharr:
+    image: phueber/prefetcharr:latest
+    container_name: prefetcharr
+    volumes:
+    - ${BASE_PATH}/prefetcharr/config.toml:/config
+    - ${BASE_PATH}/prefetcharr/logs:/log
