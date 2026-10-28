@@ -30,8 +30,8 @@ services:
     container_name: sabnzbd
     volumes:
       - "${BASE_PATH}/sabnzbd/datadir:/datadir"
-      - "${USENET_SHARE}/usenet/complete:/complete"
-      - "${USENET_SHARE}/usenet/incomplete:/incomplete"
+      - "${USENET_SHARE}/complete:/complete"
+      - "${USENET_SHARE}/incomplete:/incomplete"
       - "${BASE_PATH}/sabnzbd/datadir/movies:/datadir/movies"
       - "${BASE_PATH}/sabnzbd/datadir/tv:/datadir/tv"
       - "${BASE_PATH}/sabnzbd/datadir/music:/datadir/music"
