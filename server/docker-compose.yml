@@ -29,10 +29,10 @@ services:
     container_name: sabnzbd
     volumes:
       - "${BASE_PATH}/sabnzbd/datadir:/datadir"
-      - "${MEDIA_SHARE}/movies:/datadir/movies"
-      - "${MEDIA_SHARE}/tv:/datadir/tv"
-      - "${MEDIA_SHARE}/music:/datadir/music"
-      - "${MEDIA_SHARE}/software:/datadir/software"
+      - "${BASE_PATH}/movies:/datadir/movies"
+      - "${BASE_PATH}/tv:/datadir/tv"
+      - "${BASE_PATH}/music:/datadir/music"
+      - "${BASE_PATH}/software:/datadir/software"
     ports:
       - 8080:8080
     restart: unless-stopped
