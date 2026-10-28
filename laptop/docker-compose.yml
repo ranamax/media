@@ -1,6 +1,6 @@
 # Before using this, export the following:
 # export PUID=$(id -u)
-# export GUIDD=$(id -g)
+# export GUID=$(id -g)
 # export TZ=America/New_York
 # export time=$(cat /etc/timezone)
 # export plexclaim=
@@ -8,8 +8,10 @@
 # PUID = 99
 # GUID = 101
 # TZ = America/New_York
-# BASE_PATH = /Users/thor/media # This is where you docker containers will store their data for each application
-# MEDIA_SHARE = /Users/thor/media  # This is where your media files will live
+# export BASE_PATH=/Users/thor/media # This is where you docker containers will store their data for each application
+# export MEDIA_SHARE=/Users/thor/media  # This is where your media files will live
+# export BASE_PATH=/Users/groot/media # This is where you docker containers will store their data for each application
+# export MEDIA_SHARE=/Users/groot/media  # This is where your media files will live
 #
 # https://trash-guides.info/Hardlinks/Hardlinks-and-Instant-Moves/ # This can be useful for establishing how the media will be presented below
 
@@ -29,9 +31,6 @@ services:
       - "${BASE_PATH}/plex/config:/config"
       - "${MEDIA_SHARE}/tv:/tv"
       - "${MEDIA_SHARE}/movies:/movies"
-#      - /mnt/nfs01/media/plex/config:/config
-#      - /mnt/nfs01/media/tv:/tv
-#      - /mnt/nfs01/media/movies:/movies
     ports:
       - 32400:32400
     restart: unless-stopped
