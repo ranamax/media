@@ -2,7 +2,8 @@
 # docker compose --env-file .env.laptop.groot up -d
 # Before using this, export the following:
 # export plexclaim=
-# static variables are on in the .env file
+# get claim token from https://www.plex.tv/claim/
+# static variables are in the .env file
 # https://trash-guides.info/Hardlinks/Hardlinks-and-Instant-Moves/ # This can be useful for establishing how the media will be presented below
 
 ---      
