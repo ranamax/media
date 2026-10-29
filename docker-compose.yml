@@ -32,8 +32,8 @@ services:
     container_name: sabnzbd
     volumes:
       - "${MEDIA_SHARE}/config/sabnzbd/datadir:/datadir"
-      - "${MEDIA_SHARE}/usenet/complete:/complete"
-      - "${MEDIA_SHARE}/usenet/incomplete:/incomplete"
+      - "${MEDIA_SHARE}/downloads/complete:/complete"
+      - "${MEDIA_SHARE}/downloads/incomplete:/incomplete"
 #      - "${MEDIA_SHARE}/sabnzbd/datadir/movies:/datadir/movies"
 #      - "${MEDIA_SHARE}/sabnzbd/datadir/tv:/datadir/tv"
 #      - "${MEDIA_SHARE}/sabnzbd/datadir/music:/datadir/music"
