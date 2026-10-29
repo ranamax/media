@@ -1,5 +1,5 @@
 # Select env file
-# docker compose --env-file .env.laptop.groot up -d
+# docker compose --env-file .env.laptop up -d
 # Before using this, export the following:
 # export plexclaim=
 # get claim token from https://www.plex.tv/claim/
