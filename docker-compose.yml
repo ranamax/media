@@ -25,6 +25,7 @@ services:
       - 32400:32400
     restart: unless-stopped
 
+  #sabnzbd - download client
   sabnzbd:
     image: linuxserver/sabnzbd
     container_name: sabnzbd
@@ -70,7 +71,7 @@ services:
       - 8989:8989
     restart: unless-stopped
 
-  #Bazarr - uused to find subtitles
+  #Bazarr - used to find subtitles
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
