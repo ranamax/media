@@ -102,34 +102,34 @@ services:
       - 9696:9696
     restart: unless-stopped
 
-  #Seerr - allows users to request media on their own
-  seerr:
-    image: ghcr.io/seerr-team/seerr:latest
-    init: true
-    container_name: seerr
-    user: "1000:1000"
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - LOG_LEVEL=debug
-      - TZ=${TZ}
-      - PORT=5055 #optional
-    volumes:
-      - ${MEDIA_SHARE}/config/seerr/config:/app/config
-      - ${MEDIA_SHARE}:/media #Access to the entire share
-    ports:
-      - 5055:5055
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
-      start_period: 20s
-      timeout: 3s
-      interval: 15s
-      retries: 3
-    security_opt:
-      - no-new-privileges
-    cap_drop:
-      - ALL
-    restart: unless-stopped
+  # #Seerr - allows users to request media on their own
+  # seerr:
+  #   image: ghcr.io/seerr-team/seerr:latest
+  #   init: true
+  #   container_name: seerr
+  #   user: "1000:1000"
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - LOG_LEVEL=debug
+  #     - TZ=${TZ}
+  #     - PORT=5055 #optional
+  #   volumes:
+  #     - ${MEDIA_SHARE}/config/seerr/config:/app/config
+  #     - ${MEDIA_SHARE}:/media #Access to the entire share
+  #   ports:
+  #     - 5055:5055
+  #   healthcheck:
+  #     test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
+  #     start_period: 20s
+  #     timeout: 3s
+  #     interval: 15s
+  #     retries: 3
+  #   security_opt:
+  #     - no-new-privileges
+  #   cap_drop:
+  #     - ALL
+  #   restart: unless-stopped
 
   #Tautulli - for plex statistics. Very useful when troubleshooting performance issues
   tautulli:
